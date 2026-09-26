@@ -1,0 +1,367 @@
+:root{
+    --sky-top:#7ec8f0;
+    --sky-bottom:#cdeeff;
+    --grass1:#5fa845;
+    --grass2:#4c8c37;
+    --hole:#2b1c10;
+    --hole-edge:#4a3018;
+    --dirt-mound:#8a5a2e;
+    --dirt-mound-dark:#6e461f;
+    --accent:#ffcb3d;
+    --panel:#20130a;
+    --text:#fdf6e3;
+    box-sizing:border-box;
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0;
+    padding:0;
+    min-height:100%;
+    font-family:'Trebuchet MS', 'Segoe UI', sans-serif;
+    background:
+      radial-gradient(circle at 85% 12%, #fff6cc 0%, #fff6cc00 9%),
+      linear-gradient(var(--sky-top), var(--sky-bottom) 60%, var(--grass1) 60%, var(--grass2) 100%);
+    background-attachment:fixed;
+    color:var(--text);
+    display:flex;
+    justify-content:center;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    position:relative;
+    overflow-x:hidden;
+  }
+  /* drifting clouds, purely decorative */
+  body::before, body::after{
+    content:"";
+    position:fixed;
+    top:8%;
+    width:90px; height:34px;
+    background:#ffffff;
+    border-radius:50px;
+    box-shadow:
+      24px 8px 0 -4px #ffffff,
+      -22px 6px 0 -6px #ffffff,
+      8px -10px 0 -2px #ffffff;
+    opacity:.85;
+    pointer-events:none;
+    z-index:0;
+  }
+  body::before{ left:6%; animation:drift 38s linear infinite; }
+  body::after{ left:60%; top:15%; transform:scale(.7); animation:drift 50s linear infinite reverse; }
+  @keyframes drift{
+    0%{ transform:translateX(0); }
+    50%{ transform:translateX(40px); }
+    100%{ transform:translateX(0); }
+  }
+
+  /* scattered flowers on the grass, fixed to the viewport like the clouds */
+  .decor-flowers{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    overflow:hidden;
+  }
+  .flower{
+    position:absolute;
+    width:16px;
+    height:16px;
+    transform:scale(var(--s,1));
+    background:
+      radial-gradient(circle 3px at 50% 50%, #ffe066 0 3px, transparent 3.2px),
+      radial-gradient(circle 4px at 50% 18%, var(--petal), transparent 4.2px),
+      radial-gradient(circle 4px at 50% 82%, var(--petal), transparent 4.2px),
+      radial-gradient(circle 4px at 18% 50%, var(--petal), transparent 4.2px),
+      radial-gradient(circle 4px at 82% 50%, var(--petal), transparent 4.2px);
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.2));
+  }
+  .flower::after{
+    /* little stem */
+    content:"";
+    position:absolute;
+    top:100%;
+    left:50%;
+    width:2px;
+    height:10px;
+    background:#3f6b2c;
+    transform:translateX(-50%);
+  }
+  .flower.pink{ --petal:#ff8fb3; }
+  .flower.white{ --petal:#ffffff; }
+  .flower.purple{ --petal:#c99bf0; }
+  .flower.yellow{ --petal:#ffd24d; }
+
+  .wrap{
+    width:100%;
+    max-width:640px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+    position:relative;
+    z-index:1;
+  }
+
+  h1{
+    margin:6px 0 0 0;
+    font-size:clamp(1.4rem, 5vw, 2.2rem);
+    text-shadow:2px 2px 0 #000;
+    letter-spacing:1px;
+  }
+
+  .panel{
+    background:var(--panel);
+    border-radius:14px;
+    padding:12px 16px;
+    width:100%;
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow:0 4px 10px rgba(0,0,0,.4);
+  }
+
+  .stat{
+    font-size:clamp(1rem,3.5vw,1.3rem);
+    font-weight:bold;
+  }
+  .stat span{color:var(--accent);}
+
+  .controls{
+    display:flex;
+    gap:8px;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+
+  select, button{
+    font-family:inherit;
+    font-size:.95rem;
+    padding:8px 12px;
+    border-radius:8px;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
+  }
+
+  select{
+    background:#3a2213;
+    color:var(--text);
+    border:1px solid var(--accent);
+  }
+
+  button{
+    background:var(--accent);
+    color:#2a1a05;
+    transition:transform .1s ease, filter .1s ease;
+  }
+  button:hover{filter:brightness(1.08);}
+  button:active{transform:scale(0.95);}
+  button:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+  }
+
+  #musicBtn{
+    background:#4a2f1a;
+    color:var(--text);
+    border:1px solid var(--accent);
+  }
+
+  .board{
+    width:100%;
+    aspect-ratio:1/1;
+    max-width:520px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(3,1fr);
+    gap:clamp(10px,3vw,22px);
+    background:
+      repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 3px, transparent 3px 9px),
+      linear-gradient(160deg, var(--grass1), var(--grass2) 85%);
+    padding:clamp(14px,4vw,26px);
+    border-radius:22px;
+    box-shadow:inset 0 0 40px rgba(0,0,0,.25), 0 8px 18px rgba(0,0,0,.35);
+    border:4px solid #3f6b2c;
+    position:relative;
+  }
+
+  .board-decor{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    border-radius:18px;
+  }
+
+  /* small grass tuft: three blades fanned from a base point */
+  .tuft{
+    position:absolute;
+    width:3px;
+    height:16px;
+    background:linear-gradient(to top, #355e26, #7cbf52);
+    border-radius:50% 50% 0 0;
+  }
+  .tuft::before, .tuft::after{
+    content:"";
+    position:absolute;
+    bottom:0;
+    width:3px;
+    height:12px;
+    background:linear-gradient(to top, #355e26, #6fae4a);
+    border-radius:50% 50% 0 0;
+  }
+  .tuft::before{ left:-5px; transform:rotate(-20deg); transform-origin:bottom center; }
+  .tuft::after{ left:5px; transform:rotate(20deg); transform-origin:bottom center; height:10px; }
+
+  .flower.small{
+    width:11px;
+    height:11px;
+  }
+  .flower.small::after{ height:6px; }
+
+  .hole{
+    position:relative;
+    cursor:pointer;
+    touch-action:manipulation;
+    /* mound rings drawn behind the hole opening for depth against the grass */
+    background:
+      radial-gradient(circle at 50% 50%, transparent 0 29%, var(--dirt-mound) 29% 42%, var(--dirt-mound-dark) 42% 50%, transparent 50%);
+  }
+  .hole-opening{
+    position:absolute;
+    left:22%;
+    top:22%;
+    width:56%;
+    height:56%;
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 38%, var(--hole-edge), var(--hole) 70%);
+    box-shadow:inset 0 8px 14px rgba(0,0,0,.7);
+    overflow:hidden;
+  }
+  .mole{
+    width:74%;
+    height:100%;
+    border-radius:48% 48% 42% 42%;
+    background:radial-gradient(circle at 40% 26%, #8f8579, #5c554a 70%, #3a342c 100%);
+    position:absolute;
+    bottom:-105%;
+    left:13%;
+    transition:bottom .18s cubic-bezier(.34,1.56,.64,1);
+    box-shadow:0 5px 8px rgba(0,0,0,.4), inset 0 -6px 10px rgba(0,0,0,.25);
+  }
+
+  /* tiny ear nubs, barely visible — real moles have no prominent ears */
+  .mole .ear{
+    position:absolute;
+    top:-2%;
+    width:12%;
+    height:12%;
+    background:#5c554a;
+    border-radius:50%;
+  }
+  .mole .ear.left{ left:10%; }
+  .mole .ear.right{ right:10%; }
+
+  /* long pointed snout, the defining mole feature */
+  .mole .snout{
+    position:absolute;
+    bottom:2%;
+    left:50%;
+    transform:translateX(-50%);
+    width:40%;
+    height:44%;
+    background:radial-gradient(circle at 50% 30%, #f3c6cf, #e5a3b4 75%);
+    border-radius:48% 48% 50% 50% / 60% 60% 40% 40%;
+  }
+  .mole .nose{
+    position:absolute;
+    bottom:32%;
+    left:50%;
+    transform:translateX(-50%);
+    width:12%;
+    height:9%;
+    background:#7a3b4a;
+    border-radius:50%;
+  }
+
+  /* eyes: tiny and set close together, moles are nearly blind */
+  .mole .eye{
+    position:absolute;
+    top:40%;
+    width:7%;
+    height:7%;
+    background:#141210;
+    border-radius:50%;
+  }
+  .mole .eye.left{ left:34%; }
+  .mole .eye.right{ right:34%; }
+
+  /* whiskers */
+  .mole .whiskers{
+    position:absolute;
+    bottom:14%;
+    width:100%;
+    height:2px;
+  }
+  .mole .whiskers::before, .mole .whiskers::after{
+    content:"";
+    position:absolute;
+    top:0;
+    width:22%;
+    height:2px;
+    background:rgba(60,40,20,.55);
+  }
+  .mole .whiskers::before{ left:-6%; transform:rotate(-8deg); }
+  .mole .whiskers::after{ right:-6%; transform:rotate(8deg); }
+
+  .hole.up .mole{ bottom:8%; }
+
+  .hole.whacked .mole{
+    filter:brightness(.7) saturate(.8);
+    bottom:-105%;
+    transition:bottom .15s ease-in;
+  }
+  .hole.whacked .mole .eye{
+    height:2px;
+    top:38%;
+    border-radius:2px;
+  }
+
+  .score-pop{
+    position:absolute;
+    top:0; left:50%;
+    transform:translateX(-50%);
+    color:var(--accent);
+    font-weight:bold;
+    font-size:1.2rem;
+    pointer-events:none;
+    animation:popUp .6s ease forwards;
+    text-shadow:1px 1px 0 #000;
+  }
+  @keyframes popUp{
+    0%{opacity:1; top:20%;}
+    100%{opacity:0; top:-30%;}
+  }
+
+  .msg{
+    min-height:1.4em;
+    font-size:1.05rem;
+    color:var(--accent);
+    font-weight:bold;
+    text-align:center;
+  }
+
+  footer{
+    opacity:.6;
+    font-size:.75rem;
+    text-align:center;
+    margin-top:4px;
+  }
+
+  @media (max-width:380px){
+    .panel{flex-direction:column; align-items:stretch;}
+    .controls{justify-content:space-between;}
+  }
